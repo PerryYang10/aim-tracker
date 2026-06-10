@@ -2,6 +2,7 @@ import sqlite3
 import os
 from flask import Flask, request, jsonify, send_from_directory
 
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__)
 DB_PATH = os.path.join(BASE_DIR, 'records.db')
@@ -30,11 +31,11 @@ def init_db():
 
 @app.route('/')
 def index():
-    return send_from_directory(BASE_DIR, 'index.html')
+    return send_from_directory(ROOT_DIR, 'index.html')
 
 @app.route('/<path:filename>')
 def static_files(filename):
-    return send_from_directory(BASE_DIR, filename)
+    return send_from_directory(ROOT_DIR, filename)
 
 @app.route('/api/records', methods=['GET'])
 def list_records():
