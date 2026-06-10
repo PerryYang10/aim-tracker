@@ -774,16 +774,27 @@ function escapeHtml(s) {
 }
 
 // ── Set current datetime ──
+let _dtBase = Date.now();
+let _dtTick = 0;
+let _dtUserChanged = false;
+let _dtAutoVal = '';
 function setNow() {
-  const now = new Date();
-  const iso = now.getFullYear()+'-'+
-    String(now.getMonth()+1).padStart(2,'0')+'-'+
-    String(now.getDate()).padStart(2,'0')+'T'+
-    String(now.getHours()).padStart(2,'0')+':'+
-    String(now.getMinutes()).padStart(2,'0')+':'+
-    String(now.getSeconds()).padStart(2,'0');
+  const d = new Date(_dtBase + _dtTick);
+  const iso = d.getFullYear()+'-'+
+    String(d.getMonth()+1).padStart(2,'0')+'-'+
+    String(d.getDate()).padStart(2,'0')+'T'+
+    String(d.getHours()).padStart(2,'0')+':'+
+    String(d.getMinutes()).padStart(2,'0')+':'+
+    String(d.getSeconds()).padStart(2,'0');
+  _dtAutoVal = iso;
+  if (_dtUserChanged) return;
   document.getElementById('inputDatetime').value = iso;
 }
+const dtInput = document.getElementById('inputDatetime');
+dtInput.addEventListener('focus', () => { _dtBase = Date.now(); _dtTick = 0; _dtUserChanged = false; setNow(); });
+dtInput.addEventListener('input', () => { if (dtInput.value !== _dtAutoVal) _dtUserChanged = true; });
+dtInput.addEventListener('blur', () => { _dtUserChanged = false; });
+setInterval(() => { _dtTick += 200; setNow(); }, 200);
 
 // ── Gun history dropdown ──
 async function getGunHistory() {
