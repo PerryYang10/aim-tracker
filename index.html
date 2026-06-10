@@ -459,13 +459,40 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-// ── Data layer (localStorage) ──
-const STORAGE_KEY = 'aim_tracker_records';
+// ── Supabase config ──
+// 创建 Supabase 项目后，把下面两个值替换掉：
+const SUPABASE_URL = 'https://adfnxdfomwawhsjnspcv.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_epSis7hY1bfaOtFc3Kp6lg_qlaCkP1O';
 
+let _supabase = null;
+function getSupabase() {
+  if (!_supabase) _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  return _supabase;
+}
+
+function getUserId() {
+  let uid = localStorage.getItem('aim_tracker_uid');
+  if (!uid) {
+    uid = crypto.randomUUID();
+    localStorage.setItem('aim_tracker_uid', uid);
+  }
+  return uid;
+}
+
+// ── Data layer (Supabase) ──
 async function loadRecords() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    const { data, error } = await getSupabase()
+      .from('records')
+      .select('id, datetime, gun, time_str, time_ms, kpm')
+      .eq('user_id', getUserId());
+    if (error) throw error;
+    return (data || []).map(r => ({
+      id: r.id, datetime: r.datetime, gun: r.gun,
+      timeStr: r.time_str, timeMs: r.time_ms, kpm: r.kpm
+    }));
   } catch (e) {
     console.error('Failed to load records:', e);
     return [];
@@ -473,18 +500,56 @@ async function loadRecords() {
 }
 
 async function addRecordApi(record) {
-  const records = await loadRecords();
-  if (records.some(r => r.id === record.id)) throw new Error('duplicate id');
-  records.push(record);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  const { error } = await getSupabase()
+    .from('records')
+    .insert({
+      id: record.id, user_id: getUserId(),
+      datetime: record.datetime, gun: record.gun,
+      time_str: record.timeStr, time_ms: record.timeMs, kpm: record.kpm
+    });
+  if (error) {
+    if (error.code === '23505') throw new Error('duplicate id');
+    throw new Error(error.message);
+  }
 }
 
 async function deleteRecordApi(id) {
-  const records = await loadRecords();
-  const idx = records.findIndex(r => r.id === id);
-  if (idx === -1) throw new Error('not found');
-  records.splice(idx, 1);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  const { error } = await getSupabase()
+    .from('records')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', getUserId());
+  if (error) throw new Error(error.message);
+}
+
+// ── Migration: move old localStorage data to Supabase ──
+async function migrateLocalToCloud() {
+  const OLD_KEY = 'aim_tracker_records';
+  const raw = localStorage.getItem(OLD_KEY);
+  if (!raw) return;
+  let records;
+  try { records = JSON.parse(raw); } catch (e) { localStorage.removeItem(OLD_KEY); return; }
+  if (!records.length) { localStorage.removeItem(OLD_KEY); return; }
+
+  const uid = getUserId();
+  const { data: existing } = await getSupabase()
+    .from('records')
+    .select('id')
+    .eq('user_id', uid)
+    .limit(1);
+
+  if (existing && existing.length > 0) {
+    localStorage.removeItem(OLD_KEY);
+    return;
+  }
+
+  const toInsert = records.map(r => ({
+    id: r.id, user_id: uid,
+    datetime: r.datetime, gun: r.gun,
+    time_str: r.timeStr, time_ms: r.timeMs, kpm: r.kpm
+  }));
+  const { error } = await getSupabase().from('records').insert(toInsert);
+  if (!error) localStorage.removeItem(OLD_KEY);
 }
 
 // ── Time parsing ──
@@ -1566,7 +1631,7 @@ document.getElementById('importFile').addEventListener('change', async function(
 
 // ── Init ──
 setNow();
-renderAll();
+migrateLocalToCloud().finally(() => renderAll());
 requestAnimationFrame(() => requestAnimationFrame(updateSortIndicator));
 </script>
 </body>
