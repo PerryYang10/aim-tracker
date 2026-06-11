@@ -93,16 +93,16 @@
   }
 
   /* ── UID Panel ── */
-  .uid-panel { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, margin 0.3s ease; margin: 0 auto; width: 100%; max-width: 460px; }
-  .uid-panel.show { max-height: 80px; margin-top: 12px; }
-  .uid-panel-inner { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; }
-  .uid-panel-inner .uid-label { color: rgba(255,255,255,0.4); font-size: 11px; }
-  .uid-panel-inner .uid-value { color: rgba(0,255,100,0.6); font-size: 11px; font-family: monospace; word-break: break-all; text-align: center; }
-  .uid-panel-inner .uid-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: rgba(255,255,255,0.55); padding: 4px 10px; font-size: 11px; cursor: pointer; font-family: inherit; transition: border-color 0.15s, color 0.15s; }
-  .uid-panel-inner .uid-btn:hover { border-color: rgba(0,255,100,0.4); color: rgba(0,255,100,0.8); }
+  .uid-panel { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, margin 0.35s ease; margin: 0 auto; width: 100%; max-width: 500px; }
+  .uid-panel.show { max-height: 160px; margin-top: 12px; }
+  .uid-panel-inner { background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .uid-panel-inner .uid-hint { color: rgba(255,255,255,0.45); font-size: 12px; width: 100%; text-align: center; line-height: 1.6; }
+  .uid-panel-inner .uid-value { color: rgba(0,255,100,0.65); font-size: 12px; font-family: monospace; word-break: break-all; text-align: center; }
+  .uid-panel-inner .uid-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: rgba(255,255,255,0.6); padding: 5px 12px; font-size: 12px; cursor: pointer; font-family: inherit; transition: border-color 0.15s, color 0.15s; }
+  .uid-panel-inner .uid-btn:hover { border-color: rgba(0,255,100,0.4); color: rgba(0,255,100,0.85); }
   .uid-edit-row { display: none; gap: 6px; width: 100%; }
   .uid-edit-row.show { display: flex; }
-  .uid-edit-row input { flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: rgba(0,255,100,0.8); padding: 4px 8px; font-size: 11px; font-family: monospace; outline: none; }
+  .uid-edit-row input { flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: rgba(0,255,100,0.8); padding: 5px 8px; font-size: 12px; font-family: monospace; outline: none; }
   .uid-edit-row input:focus { border-color: rgba(0,255,100,0.4); }
 
   /* ── Side Decorations ── */
@@ -359,16 +359,17 @@
     <div class="header-actions">
       <button class="btn-sm" id="btnExport">⬇ 导出备份</button>
       <button class="btn-sm" id="btnImport">⬆ 导入恢复</button>
+      <button class="btn-sm" id="btnUidToggle">🔑 数据迁移</button>
     </div>
     <div class="uid-panel" id="uidPanel">
       <div class="uid-panel-inner">
-        <span class="uid-label">你的用户ID</span>
+        <div class="uid-hint">换设备或换域名后数据不见了？把旧设备的用户ID填到这里即可恢复。当前ID：</div>
         <span class="uid-value" id="uidDisplay"></span>
         <button class="uid-btn" id="btnUidCopy">复制</button>
         <button class="uid-btn" id="btnUidEdit">修改</button>
         <div class="uid-edit-row" id="uidEditRow">
-          <input type="text" id="uidEditInput" placeholder="粘贴新 UUID">
-          <button class="uid-btn" id="btnUidSave">保存</button>
+          <input type="text" id="uidEditInput" placeholder="粘贴旧设备的 UUID">
+          <button class="uid-btn" id="btnUidSave">保存并刷新</button>
           <button class="uid-btn" id="btnUidCancel">取消</button>
         </div>
       </div>
@@ -512,8 +513,7 @@ function getUserId() {
 let uidPanelOpen = false;
 document.getElementById('uidDisplay').textContent = getUserId();
 
-// Toggle panel on label click
-document.querySelector('.uid-label').addEventListener('click', () => {
+document.getElementById('btnUidToggle').addEventListener('click', () => {
   uidPanelOpen = !uidPanelOpen;
   document.getElementById('uidPanel').classList.toggle('show', uidPanelOpen);
   document.getElementById('uidDisplay').textContent = getUserId();
