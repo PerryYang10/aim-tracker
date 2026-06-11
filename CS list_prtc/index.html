@@ -92,6 +92,19 @@
     color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08);
   }
 
+  /* ── UID Panel ── */
+  .uid-panel { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, margin 0.3s ease; margin: 0 auto; width: 100%; max-width: 460px; }
+  .uid-panel.show { max-height: 80px; margin-top: 12px; }
+  .uid-panel-inner { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .uid-panel-inner .uid-label { color: rgba(255,255,255,0.4); font-size: 11px; }
+  .uid-panel-inner .uid-value { color: rgba(0,255,100,0.6); font-size: 11px; font-family: monospace; word-break: break-all; text-align: center; }
+  .uid-panel-inner .uid-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: rgba(255,255,255,0.55); padding: 4px 10px; font-size: 11px; cursor: pointer; font-family: inherit; transition: border-color 0.15s, color 0.15s; }
+  .uid-panel-inner .uid-btn:hover { border-color: rgba(0,255,100,0.4); color: rgba(0,255,100,0.8); }
+  .uid-edit-row { display: none; gap: 6px; width: 100%; }
+  .uid-edit-row.show { display: flex; }
+  .uid-edit-row input { flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: rgba(0,255,100,0.8); padding: 4px 8px; font-size: 11px; font-family: monospace; outline: none; }
+  .uid-edit-row input:focus { border-color: rgba(0,255,100,0.4); }
+
   /* ── Side Decorations ── */
   .bg-canvas {
     position: fixed; inset: 0; z-index: 0;
@@ -347,6 +360,19 @@
       <button class="btn-sm" id="btnExport">⬇ 导出备份</button>
       <button class="btn-sm" id="btnImport">⬆ 导入恢复</button>
     </div>
+    <div class="uid-panel" id="uidPanel">
+      <div class="uid-panel-inner">
+        <span class="uid-label">你的用户ID</span>
+        <span class="uid-value" id="uidDisplay"></span>
+        <button class="uid-btn" id="btnUidCopy">复制</button>
+        <button class="uid-btn" id="btnUidEdit">修改</button>
+        <div class="uid-edit-row" id="uidEditRow">
+          <input type="text" id="uidEditInput" placeholder="粘贴新 UUID">
+          <button class="uid-btn" id="btnUidSave">保存</button>
+          <button class="uid-btn" id="btnUidCancel">取消</button>
+        </div>
+      </div>
+    </div>
   </div>
   <input type="file" id="importFile" accept=".json" style="position:absolute;left:-9999px;top:0;width:1px;height:1px;opacity:0">
 
@@ -481,6 +507,40 @@ function getUserId() {
   }
   return uid;
 }
+
+// ── UID panel ──
+let uidPanelOpen = false;
+document.getElementById('uidDisplay').textContent = getUserId();
+
+// Toggle panel on label click
+document.querySelector('.uid-label').addEventListener('click', () => {
+  uidPanelOpen = !uidPanelOpen;
+  document.getElementById('uidPanel').classList.toggle('show', uidPanelOpen);
+  document.getElementById('uidDisplay').textContent = getUserId();
+});
+
+document.getElementById('btnUidCopy').addEventListener('click', () => {
+  navigator.clipboard.writeText(getUserId()).then(() => showToast('用户ID已复制'));
+});
+
+document.getElementById('btnUidEdit').addEventListener('click', () => {
+  document.getElementById('uidEditInput').value = getUserId();
+  document.getElementById('uidEditRow').classList.add('show');
+});
+
+document.getElementById('btnUidSave').addEventListener('click', () => {
+  const v = document.getElementById('uidEditInput').value.trim();
+  if (!v) return showToast('请输入有效的 UUID');
+  localStorage.setItem('aim_tracker_uid', v);
+  document.getElementById('uidDisplay').textContent = v;
+  document.getElementById('uidEditRow').classList.remove('show');
+  showToast('用户ID已更新');
+  renderAll();
+});
+
+document.getElementById('btnUidCancel').addEventListener('click', () => {
+  document.getElementById('uidEditRow').classList.remove('show');
+});
 
 // ── Data layer (Supabase) ──
 async function loadRecords() {
