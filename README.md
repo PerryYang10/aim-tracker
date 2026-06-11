@@ -5,7 +5,7 @@
 
 CS2 练枪数据追踪工具。记录每次训练的枪械、耗时和 KPM，自动生成分析反馈。
 
-**[👉 直接使用](https://perryyang10.github.io/aim-tracker/)**
+**[👉 直接使用](https://perrywhitepeak.github.io/aim-tracker/)**
 
 ## 😄在哪里练枪？
 
@@ -32,7 +32,7 @@ CS2 练枪数据追踪工具。记录每次训练的枪械、耗时和 KPM，自
 
 ## 🚀 使用方式
 
-直接打开 [perryyang10.github.io/aim-tracker](https://perryyang10.github.io/aim-tracker/)，开始记录即可。
+直接打开 [perrywhitepeak.github.io/aim-tracker](https://perrywhitepeak.github.io/aim-tracker/)，开始记录即可。
 
 数据独立存储于你的浏览器 + 云端，不同用户之间互不可见。
 

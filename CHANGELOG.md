@@ -1,5 +1,10 @@
 # 更新日志
 
+## 2026-06-11
+
+### 其他
+- GitHub 用户名从 PerryYang10 变更为 PerryWhitePeak，更新 README 及配置中的链接
+
 ## 2026-06-10
 
 ### 修复

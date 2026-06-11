@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Remove-Item *)",
+      "Bash(python *)",
+      "Bash(Start-Sleep -Seconds 2)",
+      "Bash(curl -s http://localhost:8520/api/records)",
+      "Bash(curl *)",
+      "Bash(Get-ChildItem -Path \"D:\\\\PROJECTS\\\\ccProject\" -Recurse -Filter \"*tracker*\")",
+      "Bash(Select-Object FullName)",
+      "Bash(pip install *)",
+      "Bash(Select-Object -Last 5)",
+      "PowerShell(pip install *)",
+      "PowerShell(python \"d:\\\\PROJECTS\\\\ccProject\\\\CS list_prtc\\\\server.py\")",
+      "PowerShell($content = Get-Content \"D:\\\\PROJECTS\\\\ccProject\\\\CS list_prtc\\\\tracker.html\" -Raw; $lines = $content -split \"`n\"; $lines[287..291] | ForEach-Object { $i = [array]::IndexOf\\($lines, $_\\); Write-Host \"Line $i`: [$_]\" })",
+      "PowerShell($content = Get-Content \"D:\\\\PROJECTS\\\\ccProject\\\\CS list_prtc\\\\tracker.html\" -Raw; $lines = $content -split \"`n\"; for \\($i=580; $i -lt 595; $i++\\) { Write-Host \"Line $i`: [$\\($lines[$i]\\)]\" })",
+      "Bash(git init *)",
+      "Bash(gh auth *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(gh repo *)",
+      "PowerShell(Get-ItemProperty *)",
+      "Bash(git config *)",
+      "Bash(export HTTPS_PROXY=http://127.0.0.1:7897)",
+      "Bash(export HTTP_PROXY=http://127.0.0.1:7897)",
+      "Bash(git push *)",
+      "PowerShell(Move-Item *)",
+      "Bash(git rm *)",
+      "Bash(gh api *)",
+      "Bash(cp \"d:\\\\PROJECTS\\\\ccProject\\\\CS list_prtc\\\\index.html\" \"d:\\\\PROJECTS\\\\ccProject\\\\index.html\")",
+      "Bash(cp \"d:\\\\PROJECTS\\\\ccProject\\\\CS list_prtc\\\\background.jpg\" \"d:\\\\PROJECTS\\\\ccProject\\\\background.jpg\")",
+      "PowerShell(Get-Item *)",
+      "Bash(Copy-Item *)",
+      "PowerShell(Copy-Item *)",
+      "Bash(git reset *)",
+      "WebFetch(domain:perrywhitepeak.github.io)",
+      "Bash(git remote *)"
+    ]
+  }
+}
